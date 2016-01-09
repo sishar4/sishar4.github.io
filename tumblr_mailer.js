@@ -9,26 +9,42 @@ var client = tumblr.createClient({
   token_secret: 'yScFAhPfDpzRwIRKSTynNJG8vDQBTrzuWwvHzOG3uH4su00u03'
 });
 
-client.posts('sishar4.tumblr.com', function(err, blog){
-  console.log(blog);
-});
-
 var csvFile = fs.readFileSync("friend_list.csv", "utf8");
 var emailTemplate = fs.readFileSync("email_template.ejs", "utf8");
 
-
 var friends = csvParse(csvFile);
 
-//CREATE CUSTOM EMAIL FOR EACH FRIEND
-friends.forEach(function createTemplate(friendObj) {
-	var customizedTemplate = ejs.render(emailTemplate, {
-		firstName: friendObj.firstName,
-		numMonthsSinceContact: friendObj.numMonthsSinceContact
-	});
 
-	console.log(customizedTemplate);
+client.posts('sishar4.tumblr.com', function(err, blog){
+	var latestPosts = getLatestPosts(blog.posts);
+
+	//CREATE CUSTOM EMAIL FOR EACH FRIEND
+	friends.forEach(function createTemplate(friendObj) {
+		var customizedTemplate = ejs.render(emailTemplate, {
+			firstName: friendObj.firstName,
+			numMonthsSinceContact: friendObj.numMonthsSinceContact,
+			latestPosts: latestPosts
+		});
+
+		console.log(customizedTemplate);
+	});
 });
 
+function getLatestPosts(posts) {
+	var postsFromPastWeek = [];
+	var currentDate = new Date();
+
+	for (var i = 0; i < posts.length; i++) {
+		var postDate = new Date(posts[i].date);
+		var timeDiff = Math.abs(currentDate.getTime() - postDate.getTime());
+		var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+		if (diffDays <= 7) {
+			postsFromPastWeek.push(posts[i]);
+		}
+	}
+	return postsFromPastWeek;
+}
 
 function csvParse(csvFile) {
 	var stringsArray = [];
