@@ -1,18 +1,24 @@
 var fs = require('fs');
+var ejs = require('ejs');
+
 
 var csvFile = fs.readFileSync("friend_list.csv", "utf8");
 var emailTemplate = fs.readFileSync("email_template.html", "utf8");
 
+
 var friends = csvParse(csvFile);
 console.log(friends);
 
-friends.forEach(function replaceValuesInEmailTemplate(friend) {
-	var template = emailTemplate;
+//CREATE CUSTOM EMAIL FOR EACH FRIEND
+friends.forEach(function createTemplate(friendObj) {
+	var customizedTemplate = ejs.render(emailTemplate, {
+		firstName: friendObj.firstName,
+		numMonthsSinceContact: friendObj.numMonthsSinceContact
+	});
 
-	template = template.replace(/FIRST_NAME/gi, friend["firstName"]).replace(/NUM_MONTHS_SINCE_CONTACT/gi, friend["numMonthsSinceContact"]);
-
-	console.log(template);
+	console.log(customizedTemplate);
 });
+
 
 function csvParse(csvFile) {
 	var stringsArray = [];
