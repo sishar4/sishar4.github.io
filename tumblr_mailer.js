@@ -2,13 +2,22 @@ var fs = require('fs');
 var ejs = require('ejs');
 var tumblr = require('tumblr.js');
 
+var client = tumblr.createClient({
+  consumer_key: 'DjlEjtPAh1ihsdic9POe643AShz2vV93bw0z5XKiJPTERm5dUk',
+  consumer_secret: 'nFQOgXem2yZJsxmoOkuqvLVRUMQhjn22QrxJxnJ13pDvX8ZAlT',
+  token: 'XnSEMvNPAanTuai49C38yq1K5u02ulMagmnbMOSnaOiLiQASqj',
+  token_secret: 'yScFAhPfDpzRwIRKSTynNJG8vDQBTrzuWwvHzOG3uH4su00u03'
+});
+
+client.posts('sishar4.tumblr.com', function(err, blog){
+  console.log(blog);
+});
 
 var csvFile = fs.readFileSync("friend_list.csv", "utf8");
-var emailTemplate = fs.readFileSync("email_template.html", "utf8");
+var emailTemplate = fs.readFileSync("email_template.ejs", "utf8");
 
 
 var friends = csvParse(csvFile);
-console.log(friends);
 
 //CREATE CUSTOM EMAIL FOR EACH FRIEND
 friends.forEach(function createTemplate(friendObj) {
