@@ -1,5 +1,6 @@
 var fs = require('fs');
 var ejs = require('ejs');
+var tumblr = require('tumblr.js');
 
 
 var csvFile = fs.readFileSync("friend_list.csv", "utf8");
